@@ -1,6 +1,6 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import 'dotenv/config'
+import 'dotenv/config';
 
 export default {
   entry: './client/index.tsx',
