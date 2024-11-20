@@ -45,8 +45,8 @@ const TravelRecommendations = () => {
       <form onSubmit={handleSubmit} className="form">
         <div className="form-group">
           <label htmlFor="userQuery">
-            Describe your ideal trip (e.g., "I want to go hiking in peaceful
-            places with good food."):
+            Describe your ideal trip (e.g., &quot;I want to go hiking in
+            peaceful places with good food.&quot;):
           </label>
           <textarea
             id="userQuery"
