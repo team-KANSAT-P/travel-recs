@@ -1,5 +1,17 @@
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 
-export default function App() {
-  return <h1>Boilerplate</h1>;
-}
+import './assets/style.scss';
+import Recommendations from './Components/Recommendations';
+
+const App = () => {
+  return (
+    <div>
+      <Recommendations />
+    </div>
+  );
+};
+
+createRoot(document.querySelector('#root')!).render(<App />);
+
+export default App;
