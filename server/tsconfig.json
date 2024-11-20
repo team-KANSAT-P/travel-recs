@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./build",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+
+  },
+  "include": ["**/*.ts", "server.ts"],
+  "exclude": ["node_modules"]
+}
