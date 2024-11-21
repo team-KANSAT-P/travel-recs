@@ -1,50 +1,48 @@
-//this file is used to create the initial data in the database. And since it ran successfully, the table was created.
-
+//file for creating the initial table in the database
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
-// load environment variables from .env file
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_API_KEY;
+const supabaseUrl: string = process.env.SUPABASE_URL || '';
+const supabaseKey: string = process.env.SUPABASE_API_KEY || '';
 
-// console.log('Supabase URL:', supabaseUrl);
-// console.log('Supabase Key:', supabaseKey);
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    'Missing SUPABASE_URL or SUPABASE_API_KEY in the environment variables.',
+  );
+}
 
-const createTable = async () => {
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
+
+// Create the `createTable` function
+export const createTable = async (): Promise<void> => {
   const query = `
-      CREATE TABLE IF NOT EXISTS user_data (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        userInput TEXT NOT NULL,
-        parsedPreferences TEXT,
-        filteredData TEXT,
-        recommendation TEXT,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `;
+    CREATE TABLE IF NOT EXISTS user_data (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      userInput TEXT NOT NULL,
+      parsedPreferences TEXT,
+      filteredData TEXT,
+      recommendation TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `;
 
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/execute_sql`, {
-      method: 'POST',
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query }),
-    });
+    const { data, error } = await supabase.rpc('execute_sql', { query });
 
-    if (response.ok) {
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {}; // Parse JSON if response body is not empty
-      console.log('Table created successfully:', result);
-    } else {
-      const error = await response.json();
-      console.error('Error creating table:', error);
+    if (error) {
+      console.error('Error creating table:', error.message);
+      return;
     }
+
+    console.log('Table created successfully:', data);
   } catch (err) {
-    console.error('Error executing query:', err);
+    console.error('Error executing query:', (err as Error).message);
   }
 };
 
-createTable();
+// Call the function (only if this file is run directly)
+if (require.main === module) {
+  createTable();
+}
