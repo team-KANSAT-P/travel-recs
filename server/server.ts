@@ -3,12 +3,14 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
-// import { userQueryController } from './controllers/userQueryController'
-// import { openaiNLPQuery } from './controllers/openaiNLPQuery.ts';
-// import { googlePlacesApi } from './controllers/googlePlacesApi.ts';
+import { parseUserQuery } from './controllers/userQueryController.js';
+import {
+  getPlacesBySearchText,
+  filterPlacesByUserQuery,
+} from './controllers/googlePlacesApi.js';
 // import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
 
-import { queryOpenAIChat } from './controllers/openaiNLPQuery.ts';
+import { queryOpenAIChat as parseNLPQuery } from './controllers/openaiNLPQuery.ts';
 
 import 'dotenv/config';
 
@@ -22,15 +24,6 @@ app.use(cors());
 
 app.use(express.static(path.resolve(import.meta.dirname, '../client/assets')));
 
-// // testing route
-// app.post(
-//   '/api',
-//   queryOpenAIChat,
-//   (req: Request, res: Response, _next: NextFunction) => {
-//     res.status(200).json(res.locals.parsedChat);
-//   },
-// );
-
 app.get('/', (_req: Request, res: Response) => {
   return res
     .status(200)
@@ -38,12 +31,13 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 app.post(
-  '/api',
-  // userQueryController,
-  // openaiNLPQuery,
-  // googlePlacesApi,
+  '/api/recommendations',
+  parseUserQuery,
+  parseNLPQuery,
+  getPlacesBySearchText,
+  filterPlacesByUserQuery,
   // openAIRecommendationResponse,
-  //logger?
+  // logger?
   (_req, res) => {
     res.status(200).json(res.locals.localRecommendation);
   },
