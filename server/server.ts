@@ -3,6 +3,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
+import { queryOpenAIChat } from './controllers/openaiNLPQuery.ts';
+
 import 'dotenv/config';
 
 const app = express();
@@ -14,6 +16,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use(express.static(path.resolve(import.meta.dirname, '../client/assets')));
+
+app.post(
+  '/api',
+  queryOpenAIChat,
+  (req: Request, res: Response, _next: NextFunction) => {
+    res.status(200).json(res.locals.parsedChat);
+  },
+);
 
 app.get('/', (_req: Request, res: Response) => {
   return res
