@@ -1,8 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { Client } from '@googlemaps/google-maps-services-js';
 import 'dotenv/config';
-
-const client = new Client({});
 
 /**
  * Handles the request to get places by search text using the Google Places API.
@@ -28,15 +25,27 @@ export const getPlacesBySearchText: RequestHandler = async (
 ) => {
   try {
     const request = {
-      textQuery: 'Spicy Vegetarian Food in Sydney, Australia',
+      textQuery: 'RV park near Yosemite',
+      includedtype: 'campground',
+      languageCode: 'en',
+      pageSize: 20,
+      minRating: 2.0,
+      regionCode: 'en',
+      strictTypeFiltering: false,
       // may need to filter out parts of our parsedQueryParams that aren't explicit options for googleAPI
       // but for now, we just overwrite any defaults with our parsed query params
       ...res.locals.parsedQueryParams,
-      // // we want to combine the fields instead of overwriting them
       fields: undefined,
     };
-    const defaultFields = ['places.'];
+    const defaultFields = [
+      'places.displayName',
+      'places.editorialSummary',
+      'places.rating',
+      'places.priceRange',
+      'places.regularOpeningHours',
+    ];
 
+    // we want to combine the fields instead of overwriting them
     const fieldsHeader: string = (res.locals.parsedQueryParams?.fields ?? [])
       .concat(defaultFields)
       .join(',');
