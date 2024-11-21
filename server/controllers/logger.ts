@@ -1,5 +1,9 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+//import the user query from the controller
+//import the parsedpreference from the logger.ts controller
+//filtereddata
+//recommendation
 
 // Load .env variables
 dotenv.config();
