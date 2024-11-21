@@ -25,6 +25,7 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
     includedType: includedType,
     maxResultCount: 5,
   };
+
   const instructRole = `
   You are a parsing expert that converts natural language prompts to JSON key value pairs.
   You're our best friend, be concise if there's not enough information in the userQuery.

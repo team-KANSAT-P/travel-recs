@@ -7,7 +7,7 @@ import 'dotenv/config';
  * @function getPlacesBySearchText
  * @param _req - The incoming request object (not used in this handler).
  * @param res - The response object, used to send back the search results.
- * @param res.locals.parsedQueryParams - The parsed query parameters from openai natural language prompt parsing.
+ * @param res.locals.parsedChat - The parsed query parameters from openai natural language prompt parsing.
  * @param res.locals.placesUnfiltered - Modified to return unfiltered search results from the Google Places API.
  * @param next - The next middleware function in the stack.
  *
@@ -15,7 +15,7 @@ import 'dotenv/config';
  *
  * @remarks
  * This function constructs a request object with default parameters and merges it with
- * any parsed query parameters from `res.locals.parsedQueryParams`. It then performs a
+ * any parsed query parameters from `res.locals.parsedChat`. It then performs a
  * search using the Google Places API and stores the unfiltered results in `res.locals.placesUnfiltered`.
  */
 export const getPlacesBySearchText: RequestHandler = async (
@@ -32,11 +32,12 @@ export const getPlacesBySearchText: RequestHandler = async (
       minRating: 2.0,
       regionCode: 'en',
       strictTypeFiltering: false,
-      // may need to filter out parts of our parsedQueryParams that aren't explicit options for googleAPI
+      // may need to filter out parts of our parsedChat that aren't explicit options for googleAPI
       // but for now, we just overwrite any defaults with our parsed query params
-      ...res.locals.parsedQueryParams,
+      ...res.locals.parsedChat,
       fields: undefined,
     };
+
     const defaultFields = [
       'places.displayName',
       'places.editorialSummary',
@@ -46,7 +47,7 @@ export const getPlacesBySearchText: RequestHandler = async (
     ];
 
     // we want to combine the fields instead of overwriting them
-    const fieldsHeader: string = (res.locals.parsedQueryParams?.fields ?? [])
+    const fieldsHeader: string = (res.locals.parsedChat?.fields ?? [])
       .concat(defaultFields)
       .join(',');
 
