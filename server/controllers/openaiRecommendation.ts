@@ -29,8 +29,8 @@ export const openAIRecommendationResponse: RequestHandler = async (
     return next(error);
   }
   const instructRole = `You are a stereotypical valley girl who gives advice to people about where is a good spot for them.`;
-  const instructGoal = `Your recommendation can be one or many based off of the results passed to you here ${mapsApiResult.map(
-    (rec: any) => {
+  const instructGoal = `Your recommendation can be one or many based off of the user query here - ${userQuery} and you are to choose the best answer from these choices - ${mapsApiResult.map(
+    (rec: any, i: number) => {
       `${i}: ${JSON.stringify(rec)}`;
     },
   )}.
