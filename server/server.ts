@@ -34,9 +34,7 @@ app.post(
   openAIRecommendationResponse,
   //logger?
   (_req, res) => {
-    res.status(200).json({
-      locationRecommendation: res.locals.localRecommendation,
-    });
+    res.status(200).json(res.locals.localRecommendation);
   },
 );
 
