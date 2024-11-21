@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-
-interface ParsedResponse {
-  destinationRecommendations: string[];
-}
+import Markdown from 'react-markdown';
 
 const TravelRecommendations = () => {
   // User input state
   const [userQuery, setUserQuery] = useState('');
-  const [recommendation, setRecommendation] = useState<string[]>([]);
+  const [recommendation, setRecommendation] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -15,27 +12,30 @@ const TravelRecommendations = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setRecommendation([]);
+    //clear previous recommendation
+    setRecommendation('');
 
     try {
-      // Mock API response data for testing
-      const mockResponse: ParsedResponse = {
-        destinationRecommendations: [
-          'Aspen, Colorado - A beautiful location for hiking and nature retreats.',
-          'Santorini, Greece - Perfect for a relaxing atmosphere and stunning views.',
-          'Kyoto, Japan - Experience cultural immersion with scenic temples and gardens.',
-          'Banff, Canada - Ideal for adventure seekers and breathtaking landscapes.',
-          'Paris, France - A romantic getaway with world-class dining and art.',
-        ],
-      };
+      //actual API call
+      const response = await fetch('/api/recommendations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userQuery }),
+      });
 
-      // Simulate a delay to mimic API fetching
-      setTimeout(() => {
-        setRecommendation(mockResponse.destinationRecommendations);
-        setLoading(false);
-      }, 1000);
+      if (response.status !== 200) {
+        const parsedError: { err: string } = await response.json();
+        setError(parsedError.err);
+      } else {
+        // Parse response and set recommendation
+        const parsedResponse: string = await response.json();
+        setRecommendation(parsedResponse);
+      }
     } catch (_err) {
-      setError('Error fetching recommendations. Please try again.');
+      setError('Error fetching recommendation');
+    } finally {
       setLoading(false);
     }
   };
@@ -65,15 +65,12 @@ const TravelRecommendations = () => {
 
       {error && <p className="error">{error}</p>}
 
-      {recommendation.length > 0 && (
+      {recommendation && (
         <div className="result">
           <h2>Your Recommendations:</h2>
-          <ul>
-            {/* won't be a list - will just be a single div */}
-            {recommendation.map((dest, index) => (
-              <li key={index}>{dest}</li>
-            ))}
-          </ul>
+          <p>
+            <Markdown>{recommendation}</Markdown>
+          </p>
         </div>
       )}
     </div>
