@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { Request, Response, NextFunction } from 'express';
 
-// Load .env variables
 dotenv.config();
 
 const supabaseUrl: string = process.env.SUPABASE_URL || '';
@@ -22,51 +22,55 @@ interface UserData {
   recommendation: string;
 }
 
-//func to insert and get data from the database
-export const insertUserData = async (
-  userData: UserData,
-): Promise<UserData | null> => {
-  const { data, error } = await supabase.from('user_data').insert([userData]);
+export const insertUserDataMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const userData: UserData = req.body;
 
-  if (error) {
-    console.error('Error inserting data:', error);
-    return null;
+  if (!userData) {
+    return res.status(400).json({ error: 'Invalid user data' });
   }
-  console.log('Data inserted successfully:', data);
-  return data[0];
+
+  try {
+    const { data, error } = await supabase.from('user_data').insert([userData]);
+
+    if (error) {
+      console.error('Error inserting data:', error);
+      return res.status(500).json({ error: 'Failed to insert data' });
+    }
+
+    console.log('Data inserted successfully:', data);
+    // Store inserted data in `res.locals` for further middleware
+    res.locals.insertedData = data[0];
+    next();
+  } catch (err) {
+    console.error('Error during insertion:', err);
+    res.status(500).json({ error: 'An unexpected error occurred' });
+  }
 };
 
-// Fetch all user data from the database
-export const getUserData = async (): Promise<UserData[] | null> => {
-  const { data, error } = await supabase.from('user_data').select('*');
+// Middleware to get all user data
+export const getUserDataMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { data, error } = await supabase.from('user_data').select('*');
 
-  if (error) {
-    console.error('Error retrieving data:', error);
-    return null;
+    if (error) {
+      console.error('Error retrieving data:', error);
+      return res.status(500).json({ error: 'Failed to retrieve data' });
+    }
+
+    console.log('Retrieved Data:', data);
+    // Store retrieved data in `res.locals` for further use
+    res.locals.userData = data;
+    next();
+  } catch (err) {
+    console.error('Error during retrieval:', err);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
-  return data;
 };
-
-//test on get user data
-// const getData = async () => {
-//   const data = await getUserData();
-//   console.log('Retrieved Data:', data);
-// };
-
-// getData();
-
-//test on insert user data
-//the tested data has been added to the user_data table
-// const runTest = async () => {
-//   await insertUserData(
-//     'I want a beach vacation in Hawaii',
-//     '{"activities":"beach","atmosphere":"relaxing","budget":"luxury"}',
-//     '{"places":["Waikiki Beach", "Kailua Beach"]}',
-//     '{"recommendations":["Stay at Resort A", "Try snorkeling at Place B"]}',
-//   );
-
-//   const data = await getUserData();
-//   console.log('Retrieved Data:', data);
-// };
-
-// runTest();

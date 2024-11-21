@@ -21,6 +21,34 @@ app.get('/', (_req: Request, res: Response) => {
     .sendFile(path.resolve(import.meta.dirname, '../client/index.html'));
 });
 
+app.post(
+  '/api',
+  // userQueryController,
+  openaiNLPQuery,
+  googlePlacesApi,
+  openAIRecommendationResponse,
+  //logger?
+  (_req, res) => {
+    res.status(200).json(res.locals.localRecommendation);
+  },
+);
+
+//router to insert userdata into database
+app.post('/insert', insertUserDataMiddleware, (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Data inserted successfully',
+    data: res.locals.insertedData,
+  });
+});
+
+//routers to get userdata from database
+app.get('/fetch', getUserDataMiddleware, (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Data retrieved successfully',
+    data: res.locals.userData,
+  });
+});
+
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     error: 'Not Found',
