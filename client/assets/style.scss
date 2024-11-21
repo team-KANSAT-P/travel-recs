@@ -1,0 +1,179 @@
+@use 'sass:color';
+// Variables
+$primary-color: #142e6f; // Deep blue
+$secondary-color: #fa6959; // Warm orange
+$accent-color: #f95738; // Bright coral
+$background-color: #ffffff; // Soft neutral background
+$text-color: #0b132b; // Dark text
+$light-text-color: #808e9b; // Muted text
+$error-color: #e63946; // Vibrant red for errors
+$success-color: #52b788; // Green for success
+$hover-color: #00509e; // Brighter blue for hover effects
+$border-color: #adb5bd; // Subtle border gray
+
+// Helper Functions
+@function lighten-color($color, $amount) {
+  @return color.scale($color, $lightness: $amount);
+}
+
+@function darken-color($color, $amount) {
+  @return color.scale($color, $lightness: -$amount);
+}
+
+// Global Styles
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background: url('travel-bg.png.webp') no-repeat center center fixed;
+  background-size: cover;
+  color: $background-color; // Ensure text contrasts well with the background
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  text-align: center;
+  padding: 20px;
+}
+h1 {
+  text-shadow: 5px 5px #0b132b;
+  font-size: 35px;
+}
+
+// Container
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: $primary-color;
+  color: $light-text-color;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  h2 {
+    color: $secondary-color;
+  }
+}
+
+// Form
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: $light-text-color;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid $border-color;
+      border-radius: 5px;
+      background-color: #00509e;
+      color: $text-color;
+
+      &::placeholder {
+        color: lighten-color($light-text-color, 30%);
+      }
+
+      &:focus {
+        border-color: $accent-color;
+        outline: none;
+        box-shadow: 0 0 5px $accent-color;
+      }
+    }
+  }
+
+  button {
+    background-color: $secondary-color;
+    color: $background-color;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: $hover-color;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:disabled {
+      background-color: lighten-color($secondary-color, 20%);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Error Message
+.error {
+  color: $error-color;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+// Result Section
+.result {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #00509e;
+  border-left: 5px solid $success-color;
+  border-radius: 5px;
+  text-align: left;
+
+  h2 {
+    color: $success-color;
+    margin-bottom: 12px;
+  }
+
+  ul {
+    list-style-type: disc;
+    padding-left: 20px;
+
+    li {
+      color: $text-color;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+// Accessibility Focus States
+textarea,
+button {
+  &:focus {
+    outline: 2px solid $accent-color;
+    outline-offset: 2px;
+  }
+}
+
+// Media Queries
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  textarea {
+    font-size: 0.9rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+}
