@@ -1,4 +1,4 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 import 'dotenv/config';
 
 /**
@@ -26,11 +26,11 @@ export const getPlacesBySearchText: RequestHandler = async (
   try {
     const request = {
       textQuery: 'RV park near Yosemite',
-      includedtype: 'campground',
+      includedType: 'campground',
       languageCode: 'en',
       pageSize: 20,
       minRating: 2.0,
-      regionCode: 'en',
+      regionCode: 'us',
       strictTypeFiltering: false,
       // may need to filter out parts of our parsedChat that aren't explicit options for googleAPI
       // but for now, we just overwrite any defaults with our parsed query params
@@ -48,6 +48,7 @@ export const getPlacesBySearchText: RequestHandler = async (
 
     // we want to combine the fields instead of overwriting them
     const fieldsHeader: string = (res.locals.parsedChat?.fields ?? [])
+      .map((field: string) => `places.${field}`)
       .concat(defaultFields)
       .join(',');
 
@@ -72,19 +73,21 @@ export const getPlacesBySearchText: RequestHandler = async (
       return next({
         log:
           'googlePlacesController.getPlacesBySearchText: Google API request Error: ' +
-          data,
+          JSON.stringify(data, null, 2),
         status: 500,
         message: { err: 'A Server Error Occurred while searching for Places' },
       });
     }
 
-    res.locals.placesUnfiltered = (await response.json()).places;
-    console.log(res.locals.placesUnfiltered);
+    const data = await response.json();
+    res.locals.placesUnfiltered = data.places ?? [];
+    console.log(res.locals.placesUnfiltered.length);
     return next();
   } catch (error) {
-    console.log(error);
     return next({
-      log: 'googlePlacesController.getPlacesBySearchText: ' + error,
+      log:
+        'googlePlacesController.getPlacesBySearchText: ' +
+        JSON.stringify(error),
       status: 500,
       message: { err: 'A Server Error Occurred while searching for Places' },
     });
@@ -117,20 +120,20 @@ export const filterPlacesByUserQuery: RequestHandler = (_req, res, next) => {
     });
   res.locals.filteredPlaces = res.locals.placesUnfiltered;
   // TODO: Implement filtering logic here when we understand the format/data of user queries
-  res.locals.filteredPlaces.filter();
+  res.locals.filteredPlaces.filter(() => true);
   return next();
 };
 
-const res: Partial<Response> = {
-  locals: {
-    parsedQueryParams: {},
-  },
-};
+// const res: Partial<Response> = {
+//   locals: {
+//     parsedQueryParams: {},
+//   },
+// };
 
-getPlacesBySearchText(
-  {} as Request,
-  res as Response,
-  ((_req: Request, _res: Response, _next: NextFunction) => {
-    console.log('next middleware');
-  }) as NextFunction,
-);
+// getPlacesBySearchText(
+//   {} as Request,
+//   res as Response,
+//   ((_req: Request, _res: Response, _next: NextFunction) => {
+//     console.log('next middleware');
+//   }) as NextFunction,
+// );
