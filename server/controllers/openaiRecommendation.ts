@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express';
 import OpenAI from 'openai';
+import 'dotenv/config';
 import { error } from 'console';
 import { ServerError } from '../../types/types.ts';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPEN_AI_API_KEY as string,
+  apiKey: process.env.OPENAI_API_KEY as string,
 });
 
 export const openAIRecommendationResponse: RequestHandler = async (
@@ -13,19 +14,46 @@ export const openAIRecommendationResponse: RequestHandler = async (
   next,
 ) => {
   const { mapsApiResult, userQuery } = res.locals;
-  //   const userQuery = 'I am looking for a spot with a large beer selection and a view if possible. I'd like it to be on the eat coast somewhere.'
-  //const mapsApiResult = [
-  // {name: 'sparky's', description: 'quaint small restaurant with a view of the ocean serving seafood with vegan options', location: 'Seattle, Washington'},
-  // {name: 'The Pit', description: 'large chain restaurant with serving American style cuisine such as appetizers, entries, and desserts. Also serves a large variety of beer both craft and domestic.', location: 'Austin, Texas'},
-  // {name: 'Killer Sam', description: 'Small pizza joint serving artisanal pizza. Also offers beer and cocktails.', location: Portland, Oregon},
-  // {name: 'Nancy Eating People', description: 'Small restaurant with big flavors serving bite sized Swedish appetizers with your choice of cocktails.', location: 'New York, New York'},
-  // {name: 'Git God Aiden', description: 'Fun large restaurant with surf and turf options that you eat with your hands such as lobster and fried chicken. Serves a variety of beer and cocktails located on the 14th floor in downtown Boston with a view of the city.', location: 'Boston, Massachusetts'}
-  // ]
+  //   console.log(' In the openairecommendationResponse that i want to be in');
+  //   const userQuery =
+  //     'I am looking for a spot with a large beer selection and a view if possible. I would like it to be on the east coast somewhere.';
+  //   const mapsApiResult = [
+  //     {
+  //       name: 'sparkys',
+  //       description:
+  //         'quaint small restaurant with a view of the ocean serving seafood with vegan options',
+  //       location: 'Seattle, Washington',
+  //     },
+  //     {
+  //       name: 'The Pit',
+  //       description:
+  //         'large chain restaurant with serving American style cuisine such as appetizers, entries, and desserts. Also serves a large variety of beer both craft and domestic.',
+  //       location: 'Austin, Texas',
+  //     },
+  //     {
+  //       name: 'Killer Sam',
+  //       description:
+  //         'Small pizza joint serving artisanal pizza. Also offers beer and cocktails.',
+  //       location: 'Portland, Oregon',
+  //     },
+  //     {
+  //       name: 'Nancy Eating People',
+  //       description:
+  //         'Small restaurant with big flavors serving bite sized Swedish appetizers with your choice of cocktails.',
+  //       location: 'New York, New York',
+  //     },
+  //     {
+  //       name: 'Git God Aiden',
+  //       description:
+  //         'Fun large restaurant with surf and turf options that you eat with your hands such as lobster and fried chicken. Serves a variety of beer and cocktails located on the 14th floor in downtown Boston with a view of the city.',
+  //       location: 'Boston, Massachusetts',
+  //     },
+  //   ];
 
-  console.log(
-    'mapsApiResult in openAIRecommendationResponse middleware from res.locals: ',
-    mapsApiResult,
-  );
+  //   console.log(
+  //     'mapsApiResult in openAIRecommendationResponse middleware from res.locals: ',
+  //     mapsApiResult,
+  //   );
 
   if (!mapsApiResult) {
     const error: ServerError = {
@@ -66,7 +94,7 @@ export const openAIRecommendationResponse: RequestHandler = async (
   if (!response || response === undefined) {
     return next(error);
   }
-
+  //   console.log(await response.choices[0].message.content);
   res.locals.localRecommendation = (await response.choices[0].message
     .content) as string;
   return next();
