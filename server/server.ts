@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
+
 import { parseUserQuery } from './controllers/userQueryController.js';
 import {
   getPlacesBySearchText,
