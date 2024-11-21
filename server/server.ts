@@ -11,6 +11,10 @@ import {
 // import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
 
 import { queryOpenAIChat as parseNLPQuery } from './controllers/openaiNLPQuery.ts';
+import {
+  insertUserDataMiddleware,
+  getUserDataMiddleware,
+} from './controllers/logger.ts';
 
 import 'dotenv/config';
 
