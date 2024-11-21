@@ -2,6 +2,7 @@ export const fields: string[] = [
   'accessibilityOptions',
   'allowsDogs',
   'businessStatus',
+  'openingHours',
   'hasCurbsidePickup',
   'hasDelivery',
   'hasDineIn',

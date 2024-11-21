@@ -14,9 +14,10 @@ const openai = new OpenAI({
 });
 
 export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
-  // const { userQuery } = res.locals;
+  const { userQuery } = res.locals;
 
-  const userQuery: string = 'pizza in Los Angeles';
+  // // testing query
+  // const userQuery: string = 'how are you';
 
   const mockRequest = {
     textQuery: userQuery,
@@ -26,18 +27,23 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
   };
   const instructRole = `
   You are a parsing expert that converts natural language prompts to JSON key value pairs.
+  You're our best friend, be concise if there's not enough information in the userQuery.
     `;
 
   const instructGoal = `
   When given a user's query, break their query up into values for the keys:textQuery, field and includedType.
   If the user query request is pluralized set the default maxResultCount to a number between 2-5 in the JSON object.
   maxResultCount cannot be greater than 5.
-  If the user query request is singular set the default maxResultCount to 1 in the JSON object.
+  If the user query request is singular, set the default maxResultCount to 1 in the JSON object.
   Do not add any information to your description that is not present in information provided to you.
-  If there's not enough information given by the user, ask for more information.
+  Do not add any information to the field key that are not present in ${mockRequest.fields}.
+  Do not add any information to the includedType key that are not present in ${mockRequest.includedType}.
+  Always include displayName, location and businessStatus in the fields array, but add to that array based on keywords from the userQuery.
   Example: { textQuery: 'Tacos in Mountain View', fields: ['displayName', 'location', 'businessStatus'], includedType: 'restaurant', maxResultCount: 8, }
   Do not add any markdown or any other preceeding text to the output.
   Remove any back slashes in the output.
+  If there's not enough information given by the user, ask for more information naturally.
+  If you are unsure about an includedType, add an additional includedType that you may be less confident about.
     `;
 
   const instructFormat = `
@@ -76,7 +82,7 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
           ],
         },
       ],
-      temperature: 0.7,
+      temperature: 0.8,
     });
 
     const openAiResponse = response?.choices?.[0]?.message?.content;
@@ -89,9 +95,20 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
       return next(error);
     }
 
-    const jsoned = JSON.parse(openAiResponse);
-    console.log(jsoned);
-    res.locals.parsedChat = jsoned;
+    console.log('openAiResponse:', openAiResponse);
+
+    function processOpenAiResponse(response: string): void {
+      try {
+        const parsedResponse = JSON.parse(response);
+        console.log('JSON Response:', parsedResponse);
+        res.locals.parsedChat = parsedResponse;
+      } catch (error) {
+        console.log('String Response:', response);
+        res.locals.parsedChat = openAiResponse;
+      }
+    }
+
+    processOpenAiResponse(openAiResponse);
 
     return next();
   } catch (err) {

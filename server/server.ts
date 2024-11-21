@@ -17,13 +17,14 @@ app.use(cors());
 
 app.use(express.static(path.resolve(import.meta.dirname, '../client/assets')));
 
-app.post(
-  '/api',
-  queryOpenAIChat,
-  (req: Request, res: Response, _next: NextFunction) => {
-    res.status(200).json(res.locals.parsedChat);
-  },
-);
+// // testing route
+// app.post(
+//   '/api',
+//   queryOpenAIChat,
+//   (req: Request, res: Response, _next: NextFunction) => {
+//     res.status(200).json(res.locals.parsedChat);
+//   },
+// );
 
 app.get('/', (_req: Request, res: Response) => {
   return res
