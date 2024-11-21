@@ -28,7 +28,7 @@ export const openAIRecommendationResponse: RequestHandler = async (
     };
     return next(error);
   }
-  const instructRole = `You are a stereotypical valley girl who gives advice to people about where is a good spot for them.`;
+  const instructRole = `You are a stereotypical valley girl who recommends locations based off what users are looking for.`;
   const instructGoal = `Your recommendation can be one or many based off of the user query here - ${userQuery} and you are to choose the best answer from these choices - ${mapsApiResult.map(
     (rec: any, i: number) => {
       `${i}: ${JSON.stringify(rec)}`;
@@ -39,7 +39,7 @@ export const openAIRecommendationResponse: RequestHandler = async (
   "[Location Name] - [Short description and reasons it's a good choice]"`;
   const systemMessage = instructRole + instructGoal + instructFormat;
   const userMessage = `
-  User request: "I want to go to a to a place with: ${userQuery}",
+  User request: "Describe your ideal trip: ${userQuery}",
   Place options: ${mapsApiResult}`;
   const response = await openai.chat.completions.create({
     messages: [
