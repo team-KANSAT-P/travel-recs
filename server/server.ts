@@ -4,9 +4,9 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 
 // import { userQueryController } from './controllers/userQueryController'
-import { openaiNLPQuery } from './controllers/openaiNLPQuery.ts';
-import { googlePlacesApi } from './controllers/googlePlacesApi.ts';
-import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
+// import { openaiNLPQuery } from './controllers/openaiNLPQuery.ts';
+// import { googlePlacesApi } from './controllers/googlePlacesApi.ts';
+// import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
 
 import 'dotenv/config';
 
@@ -29,9 +29,9 @@ app.get('/', (_req: Request, res: Response) => {
 app.post(
   '/api',
   // userQueryController,
-  openaiNLPQuery,
-  googlePlacesApi,
-  openAIRecommendationResponse,
+  // openaiNLPQuery,
+  // googlePlacesApi,
+  // openAIRecommendationResponse,
   //logger?
   (_req, res) => {
     res.status(200).json(res.locals.localRecommendation);
