@@ -27,7 +27,7 @@ export const insertUserDataMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const userData: UserData = res.locals;
+  const userData: UserData = res.locals; //return an object that contains 4 loggs
 
   if (!userData) {
     return next(error);
