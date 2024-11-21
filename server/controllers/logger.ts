@@ -27,10 +27,10 @@ export const insertUserDataMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const userData: UserData = req.body;
+  const userData: UserData = res.locals;
 
   if (!userData) {
-    return res.status(400).json({ error: 'Invalid user data' });
+    return next(error);
   }
 
   try {
