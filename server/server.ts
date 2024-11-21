@@ -3,10 +3,15 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
-// import { userQueryController } from './controllers/userQueryController';
-import { openaiNLPQuery } from './controllers/openaiNLPQuery.ts';
-import { googlePlacesApi } from './controllers/googlePlacesApi.ts';
-import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
+
+import { parseUserQuery } from './controllers/userQueryController.js';
+import {
+  getPlacesBySearchText,
+  filterPlacesByUserQuery,
+} from './controllers/googlePlacesApi.js';
+// import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
+
+import { queryOpenAIChat as parseNLPQuery } from './controllers/openaiNLPQuery.ts';
 
 import 'dotenv/config';
 
@@ -27,12 +32,13 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 app.post(
-  '/api',
-  userQueryController,
-  openaiNLPQuery,
-  googlePlacesApi,
-  openAIRecommendationResponse,
-  //logger?
+  '/api/recommendations',
+  parseUserQuery,
+  parseNLPQuery,
+  getPlacesBySearchText,
+  filterPlacesByUserQuery,
+  // openAIRecommendationResponse,
+  // logger?
   (_req, res) => {
     res.status(200).json(res.locals.localRecommendation);
   },
