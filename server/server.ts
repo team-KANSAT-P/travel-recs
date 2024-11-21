@@ -8,6 +8,8 @@ import path from 'path';
 // import { googlePlacesApi } from './controllers/googlePlacesApi.ts';
 // import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
 
+import { queryOpenAIChat } from './controllers/openaiNLPQuery.ts';
+
 import 'dotenv/config';
 
 const app = express();
@@ -19,6 +21,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use(express.static(path.resolve(import.meta.dirname, '../client/assets')));
+
+// // testing route
+// app.post(
+//   '/api',
+//   queryOpenAIChat,
+//   (req: Request, res: Response, _next: NextFunction) => {
+//     res.status(200).json(res.locals.parsedChat);
+//   },
+// );
 
 app.get('/', (_req: Request, res: Response) => {
   return res
