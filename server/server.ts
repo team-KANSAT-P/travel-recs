@@ -22,6 +22,10 @@ import {
 } from './controllers/googlePlacesApi.js';
 import { openAIRecommendationResponse } from './controllers/openaiRecommendation.js';
 import { queryOpenAIChat as parseNLPQuery } from './controllers/openaiNLPQuery.ts';
+import {
+  insertUserDataMiddleware,
+  getUserDataMiddleware,
+} from './controllers/logger.ts';
 
 import 'dotenv/config';
 
@@ -62,11 +66,18 @@ app.post(
   getPlacesBySearchText,
   filterPlacesByUserQuery,
   openAIRecommendationResponse,
-  // logger?
+  insertUserDataMiddleware,
   (_req, res) => {
     res.status(200).json(res.locals.localRecommendation);
   },
 );
+
+app.get('/fetch', getUserDataMiddleware, (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Data retrieved successfully',
+    data: res.locals.userData,
+  });
+});
 
 /**
  * Middleware to handle 404 Not Found errors.
