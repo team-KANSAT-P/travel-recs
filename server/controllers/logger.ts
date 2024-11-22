@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { Request, Response, NextFunction } from 'express';
+import { ServerError } from '../../types/types.ts';
 
 dotenv.config();
 
@@ -27,9 +28,14 @@ export const insertUserDataMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const userData: UserData = res.locals; //return an object that contains 4 loggs
+  const userData: UserData = res.locals;
 
   if (!userData) {
+    const error: ServerError = {
+      log: 'Missing user data in res.locals',
+      status: 400,
+      message: { err: 'User data is required but missing.' },
+    };
     return next(error);
   }
 
