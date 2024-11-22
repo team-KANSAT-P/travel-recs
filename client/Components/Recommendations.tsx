@@ -43,6 +43,7 @@ const TravelRecommendations = () => {
   return (
     <div className="container">
       <form onSubmit={handleSubmit} className="form">
+        <h1 className="title">Let&apos;s find someplace to go!</h1>
         <div className="form-group">
           <label htmlFor="userQuery">
             Describe your ideal trip (e.g., &quot;I want to go hiking in
