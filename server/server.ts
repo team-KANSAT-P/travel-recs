@@ -3,7 +3,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
-
 import { parseUserQuery } from './controllers/userQueryController.js';
 import {
   getPlacesBySearchText,
@@ -12,6 +11,10 @@ import {
 // import { openAIRecommendationResponse } from './controllers/openaiRecommendation.ts';
 
 import { queryOpenAIChat as parseNLPQuery } from './controllers/openaiNLPQuery.ts';
+import {
+  insertUserDataMiddleware,
+  getUserDataMiddleware,
+} from './controllers/logger.ts';
 
 import 'dotenv/config';
 
@@ -31,6 +34,14 @@ app.get('/', (_req: Request, res: Response) => {
     .sendFile(path.resolve(import.meta.dirname, '../client/index.html'));
 });
 
+//routers to get userdata from database
+app.get('/fetch', getUserDataMiddleware, (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Data retrieved successfully',
+    data: res.locals.userData,
+  });
+});
+
 app.post(
   '/api/recommendations',
   parseUserQuery,
@@ -38,7 +49,7 @@ app.post(
   getPlacesBySearchText,
   filterPlacesByUserQuery,
   // openAIRecommendationResponse,
-  // logger?
+  insertUserDataMiddleware,
   (_req, res) => {
     res.status(200).json(res.locals.localRecommendation);
   },
