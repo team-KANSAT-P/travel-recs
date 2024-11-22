@@ -77,8 +77,8 @@ export const getPlacesBySearchText: RequestHandler = async (
       });
     }
 
-    res.locals.placesUnfiltered = (await response.json()).places;
-    console.log(res.locals.placesUnfiltered);
+    const data = await response.json();
+    res.locals.placesUnfiltered = data.places ?? [];
     return next();
   } catch (error) {
     console.log(error);
