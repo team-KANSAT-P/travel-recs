@@ -16,7 +16,6 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
 
-// eslint-disable-next-line no-unused-vars
 interface UserData {
   userinput: string;
   parsedpreferences: string;
@@ -29,8 +28,12 @@ export const insertUserDataMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const userData = res.locals;
-
+  const userData: UserData = {
+    userinput: res.locals.userQuery,
+    parsedpreferences: res.locals.parsedChat,
+    filtereddata: res.locals.filteredPlaces,
+    recommendation: res.locals.localRecommendation,
+  };
   if (!userData) {
     const error: ServerError = {
       log: 'Missing user data in res.locals',
