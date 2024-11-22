@@ -36,6 +36,8 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
   If the user query request is pluralized set the default maxResultCount to a number between 10-20 in the JSON object.
   maxResultCount cannot be greater than 20.
   If the user query request is singular, set the default maxResultCount to 10 in the JSON object.
+  Your response MUST be valid JSON, do NOT include any other formatting, DO NOT include markdown formatting.
+  make SURE you are double quoting your keys to maintain valid JSON.
   Do not add any information to your description that is not present in information provided to you.
   Do not add any information to the field key that are not present in ${mockRequest.fields}.
   Do not add any information to the includedType key that are not present in ${mockRequest.includedType}.
@@ -99,12 +101,12 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
     }
 
     openAiResponse = openAiResponse.replace(/```(json)?/g, '');
-    console.log(
-      'openAiResponse:',
-      openAiResponse.slice(0, 100),
-      typeof openAiResponse,
-      openAiResponse.length,
-    );
+    // console.log(
+    //   'openAiResponse:',
+    //   openAiResponse.slice(0, 100),
+    //   typeof openAiResponse,
+    //   openAiResponse.length,
+    // );
 
     function processOpenAiResponse(response: string): void {
       try {
@@ -112,8 +114,15 @@ export const queryOpenAIChat: RequestHandler = async (_req, res, next) => {
         console.log('JSON Response:', parsedResponse);
         res.locals.parsedChat = parsedResponse;
       } catch (error) {
-        console.log('String Response:', openAiResponse);
-        res.locals.parsedChat = {};
+        return next({
+          log:
+            'Error parsing OpenAI response: \n"' +
+            openAiResponse +
+            '"\nError: ' +
+            error,
+          status: 500,
+          message: { err: 'Failed to parse OpenAI response' },
+        });
       }
     }
 

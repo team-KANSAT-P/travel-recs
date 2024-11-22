@@ -81,7 +81,11 @@ export const getPlacesBySearchText: RequestHandler = async (
 
     const data = await response.json();
     res.locals.placesUnfiltered = data.places ?? [];
-    console.log(res.locals.placesUnfiltered.length);
+    console.log(
+      res.locals.placesUnfiltered
+        .map((place: any) => place.displayName.text)
+        .join('\n'),
+    );
     return next();
   } catch (error) {
     return next({

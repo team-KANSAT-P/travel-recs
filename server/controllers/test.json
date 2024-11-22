@@ -1,0 +1,6 @@
+{
+  "textQuery": "good places to eat in Tuscany",
+  "fields": ["displayName", "location", "businessStatus", "priceLevel"],
+  "includedType": "restaurant",
+  "maxResultCount": 15
+}
