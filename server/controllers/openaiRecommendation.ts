@@ -14,7 +14,10 @@ export const openAIRecommendationResponse: RequestHandler = async (
   next,
 ) => {
   const { filteredPlaces, userQuery } = res.locals;
-  // console.log(' In the openairecommendationResponse that i want to be in');
+  console.log(
+    ' In the openairecommendationResponse that i want to be in: ',
+    filteredPlaces,
+  );
 
   if (!filteredPlaces) {
     const error: ServerError = {
@@ -34,7 +37,7 @@ export const openAIRecommendationResponse: RequestHandler = async (
   )}.
     If you are given more than one, please make your recommendations with this in mind so that each recomendation doesn't sound like the only one.`;
   const instructFormat = `Your response should be in the format:
-  "[Location Name] - [Short description and reasons it's a good choice]"`;
+  "[Location Name] - [Location (Please provide a city if query is a region, but if query lists a city, please give a quick address like "1433 Cedar Ave")] - [Short description and reasons it's a good choice]"`;
   const systemMessage = instructRole + instructGoal + instructFormat;
   const userMessage = `
   User request: "Describe your ideal trip: ${userQuery}",
