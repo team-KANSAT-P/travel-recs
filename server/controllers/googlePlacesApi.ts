@@ -1,4 +1,4 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 import 'dotenv/config';
 
 /**
@@ -7,7 +7,7 @@ import 'dotenv/config';
  * @function getPlacesBySearchText
  * @param _req - The incoming request object (not used in this handler).
  * @param res - The response object, used to send back the search results.
- * @param res.locals.parsedQueryParams - The parsed query parameters from openai natural language prompt parsing.
+ * @param res.locals.parsedChat - The parsed query parameters from openai natural language prompt parsing.
  * @param res.locals.placesUnfiltered - Modified to return unfiltered search results from the Google Places API.
  * @param next - The next middleware function in the stack.
  *
@@ -15,7 +15,7 @@ import 'dotenv/config';
  *
  * @remarks
  * This function constructs a request object with default parameters and merges it with
- * any parsed query parameters from `res.locals.parsedQueryParams`. It then performs a
+ * any parsed query parameters from `res.locals.parsedChat`. It then performs a
  * search using the Google Places API and stores the unfiltered results in `res.locals.placesUnfiltered`.
  */
 export const getPlacesBySearchText: RequestHandler = async (
@@ -26,17 +26,18 @@ export const getPlacesBySearchText: RequestHandler = async (
   try {
     const request = {
       textQuery: 'RV park near Yosemite',
-      includedtype: 'campground',
+      includedType: 'campground',
       languageCode: 'en',
       pageSize: 20,
       minRating: 2.0,
-      regionCode: 'en',
+      regionCode: 'us',
       strictTypeFiltering: false,
-      // may need to filter out parts of our parsedQueryParams that aren't explicit options for googleAPI
+      // may need to filter out parts of our parsedChat that aren't explicit options for googleAPI
       // but for now, we just overwrite any defaults with our parsed query params
-      ...res.locals.parsedQueryParams,
+      ...res.locals.parsedChat,
       fields: undefined,
     };
+
     const defaultFields = [
       'places.displayName',
       'places.editorialSummary',
@@ -46,7 +47,8 @@ export const getPlacesBySearchText: RequestHandler = async (
     ];
 
     // we want to combine the fields instead of overwriting them
-    const fieldsHeader: string = (res.locals.parsedQueryParams?.fields ?? [])
+    const fieldsHeader: string = (res.locals.parsedChat?.fields ?? [])
+      .map((field: string) => `places.${field}`)
       .concat(defaultFields)
       .join(',');
 
@@ -71,7 +73,7 @@ export const getPlacesBySearchText: RequestHandler = async (
       return next({
         log:
           'googlePlacesController.getPlacesBySearchText: Google API request Error: ' +
-          data,
+          JSON.stringify(data, null, 2),
         status: 500,
         message: { err: 'A Server Error Occurred while searching for Places' },
       });
@@ -79,11 +81,17 @@ export const getPlacesBySearchText: RequestHandler = async (
 
     const data = await response.json();
     res.locals.placesUnfiltered = data.places ?? [];
+    console.log(
+      res.locals.placesUnfiltered
+        .map((place: any) => place.displayName.text)
+        .join('\n'),
+    );
     return next();
   } catch (error) {
-    console.log(error);
     return next({
-      log: 'googlePlacesController.getPlacesBySearchText: ' + error,
+      log:
+        'googlePlacesController.getPlacesBySearchText: ' +
+        JSON.stringify(error),
       status: 500,
       message: { err: 'A Server Error Occurred while searching for Places' },
     });
@@ -116,20 +124,20 @@ export const filterPlacesByUserQuery: RequestHandler = (_req, res, next) => {
     });
   res.locals.filteredPlaces = res.locals.placesUnfiltered;
   // TODO: Implement filtering logic here when we understand the format/data of user queries
-  res.locals.filteredPlaces.filter();
+  res.locals.filteredPlaces.filter(() => true);
   return next();
 };
 
-const res: Partial<Response> = {
-  locals: {
-    parsedQueryParams: {},
-  },
-};
+// const res: Partial<Response> = {
+//   locals: {
+//     parsedQueryParams: {},
+//   },
+// };
 
-getPlacesBySearchText(
-  {} as Request,
-  res as Response,
-  ((_req: Request, _res: Response, _next: NextFunction) => {
-    console.log('next middleware');
-  }) as NextFunction,
-);
+// getPlacesBySearchText(
+//   {} as Request,
+//   res as Response,
+//   ((_req: Request, _res: Response, _next: NextFunction) => {
+//     console.log('next middleware');
+//   }) as NextFunction,
+// );

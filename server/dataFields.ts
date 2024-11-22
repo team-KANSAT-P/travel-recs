@@ -31,7 +31,5 @@ export const includedType: string[] = [
   'resort_hotel',
   'beach',
   'airport',
-  'point_of_interest',
   'food',
-  'landmark',
 ];
