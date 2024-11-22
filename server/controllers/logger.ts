@@ -16,6 +16,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
 
+// eslint-disable-next-line no-unused-vars
 interface UserData {
   userinput: string;
   parsedpreferences: string;
@@ -28,7 +29,7 @@ export const insertUserDataMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const userData: UserData = res.locals;
+  const userData = res.locals;
 
   if (!userData) {
     const error: ServerError = {
@@ -43,40 +44,59 @@ export const insertUserDataMiddleware = async (
     const { data, error } = await supabase.from('user_data').insert([userData]);
 
     if (error) {
-      console.error('Error inserting data:', error);
-      return res.status(500).json({ error: 'Failed to insert data' });
+      return next({
+        log: 'logger.insertUserDataMiddleware: Error inserting data' + error,
+        status: 500,
+        message: {
+          err: 'Server Error Occurred while trying to insert log data',
+        },
+      });
     }
 
     console.log('Data inserted successfully:', data);
-    // Store inserted data in `res.locals` for further middleware
-    res.locals.insertedData = data[0];
-    next();
-  } catch (err) {
-    console.error('Error during insertion:', err);
-    res.status(500).json({ error: 'An unexpected error occurred' });
+    return next();
+  } catch (error) {
+    return next({
+      log: 'logger.insertUserDataMiddleware: Error inserting data' + error,
+      status: 500,
+      message: {
+        err: 'Server Error Occurred while trying to insert log data',
+      },
+    });
   }
 };
 
 // Middleware to get all user data
 export const getUserDataMiddleware = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction,
-) => {
+): Promise<void> => {
   try {
     const { data, error } = await supabase.from('user_data').select('*');
 
     if (error) {
       console.error('Error retrieving data:', error);
-      return res.status(500).json({ error: 'Failed to retrieve data' });
+      return next({
+        log: 'logger.getUserDataMiddleware: Error retrieving data' + error,
+        status: 500,
+        message: {
+          err: 'Server Error Occurred while trying to retrieve log data',
+        },
+      });
     }
 
     console.log('Retrieved Data:', data);
     // Store retrieved data in `res.locals` for further use
     res.locals.userData = data;
-    next();
+    return next();
   } catch (err) {
-    console.error('Error during retrieval:', err);
-    res.status(500).json({ error: 'An unexpected error occurred' });
+    return next({
+      log: 'logger.getUserDataMiddleware: Error retrieving data' + err,
+      status: 500,
+      message: {
+        err: 'Server Error Occurred while trying to retrieve log data',
+      },
+    });
   }
 };
