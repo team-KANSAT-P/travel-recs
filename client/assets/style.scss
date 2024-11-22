@@ -11,15 +11,6 @@ $success-color: #52b788; // Green for success
 $hover-color: #00509e; // Brighter blue for hover effects
 $border-color: #adb5bd; // Subtle border gray
 
-// Helper Functions
-@function lighten-color($color, $amount) {
-  @return color.scale($color, $lightness: $amount);
-}
-
-@function darken-color($color, $amount) {
-  @return color.scale($color, $lightness: -$amount);
-}
-
 // Global Styles
 * {
   box-sizing: border-box;
@@ -29,32 +20,51 @@ $border-color: #adb5bd; // Subtle border gray
 }
 
 body {
-  background: url('travel-bg.png.webp') no-repeat center center fixed;
+  background: url('NewBackground.webp') no-repeat center center fixed;
   background-size: cover;
   color: $background-color; // Ensure text contrasts well with the background
-  font-family: 'Roboto', sans-serif;
   line-height: 1.6;
   min-height: 100vh;
-  text-align: center;
   padding: 20px;
 }
-h1 {
-  text-shadow: 5px 5px #0b132b;
-  font-size: 35px;
+
+// Logo
+.logo {
+  width: 50vw; // The logo will take 50% of the viewport width
+  max-width: 750px; // Set a maximum size to prevent it from growing too large
+  min-width: 300px; // Set a minimum size to ensure it doesn't get too small
+  height: auto; // Maintain aspect ratio
+  margin: 1.5rem auto; // Center the logo
+  display: block;
+  filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.3)); // Add a subtle shadow
+}
+
+.title {
+  color: $background-color;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); // Subtle shadow for better readability
+  font-size: clamp(
+    1.5rem,
+    2vw,
+    3rem
+  ); // Dynamic size: min 1.5rem, max 3rem, base 2vw
+  text-align: center;
+  margin-top: 20px; // Add spacing below the logo
 }
 
 // Container
 .container {
   max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 30px auto; // Add more spacing from the top
+  padding: 25px;
   background: $primary-color;
   color: $light-text-color;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px; // Slightly rounder corners for a modern look
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); // Enhance shadow for depth
 
   h2 {
     color: $secondary-color;
+    text-align: center; // Center-align headings for consistency
+    margin-bottom: 10px;
   }
 }
 
@@ -62,7 +72,7 @@ h1 {
 .form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px; // Slightly larger gap for breathing room
   text-align: left;
 
   .form-group {
@@ -70,27 +80,29 @@ h1 {
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 10px; // Slightly larger spacing from input
       color: $light-text-color;
       font-weight: bold;
+      font-size: 1.1rem; // Slightly larger label text for readability
     }
 
     textarea {
       width: 100%;
-      padding: 12px;
+      padding: 15px;
       border: 2px solid $border-color;
-      border-radius: 5px;
-      background-color: #00509e;
-      color: $text-color;
+      border-radius: 8px; // Rounder edges for modern design
+      background-color: $hover-color; // Deep blue background
+      color: $background-color; // Light text color for contrast
+      font-size: 1rem; // Maintain consistency across inputs
 
       &::placeholder {
-        color: lighten-color($light-text-color, 30%);
+        color: lighten-color($light-text-color, 20%); // Muted placeholder text
       }
 
       &:focus {
         border-color: $accent-color;
         outline: none;
-        box-shadow: 0 0 5px $accent-color;
+        box-shadow: 0 0 8px $accent-color;
       }
     }
   }
@@ -99,17 +111,17 @@ h1 {
     background-color: $secondary-color;
     color: $background-color;
     border: none;
-    padding: 12px 20px;
-    font-size: 1rem;
+    padding: 14px 22px; // Larger button for accessibility
+    font-size: 1.1rem; // Slightly larger text for readability
     font-weight: bold;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
     transition: all 0.3s;
 
     &:hover {
       background-color: $hover-color;
       transform: translateY(-3px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
     &:disabled {
@@ -125,21 +137,23 @@ h1 {
 .error {
   color: $error-color;
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 15px; // Add spacing above error message
+  text-align: center; // Center error messages
 }
 
 // Result Section
 .result {
   margin-top: 30px;
   padding: 20px;
-  background-color: #00509e;
-  border-left: 5px solid $success-color;
-  border-radius: 5px;
+  background-color: $hover-color; // Match background to form style
+  border-left: 6px solid $success-color; // Thicker border for emphasis
+  border-radius: 8px; // Match form styling
   text-align: left;
 
   h2 {
     color: $success-color;
     margin-bottom: 12px;
+    text-align: center; // Center-align the result heading
   }
 
   ul {
@@ -147,7 +161,7 @@ h1 {
     padding-left: 20px;
 
     li {
-      color: $text-color;
+      color: $background-color;
       margin-bottom: 8px;
     }
   }
@@ -158,14 +172,14 @@ textarea,
 button {
   &:focus {
     outline: 2px solid $accent-color;
-    outline-offset: 2px;
+    outline-offset: 3px; // Enhance focus visibility
   }
 }
 
 // Media Queries
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 20px;
   }
 
   textarea {
@@ -173,7 +187,11 @@ button {
   }
 
   button {
-    font-size: 0.9rem;
-    padding: 10px 15px;
+    font-size: 1rem; // Adjust button text size for smaller screens
+    padding: 12px 18px;
+  }
+
+  .logo {
+    width: 300px; // Reduce logo size on smaller screens
   }
 }
